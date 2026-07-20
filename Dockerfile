@@ -1,13 +1,12 @@
 FROM quay.io/lyfe00011/md:beta
 
-# Install procps for PM2 process management
+# Install procps package to fix the 'spawn ps ENOENT' error
 RUN apt-get update && apt-get install -y procps && rm -rf /var/lib/apt/lists/*
 
-RUN git clone https://github.com/lyfe00011/levanter.git /root/LyFE/
+RUN git clone https://github.com /root/LyFE/
 WORKDIR /root/LyFE/
 
-# Install application dependencies
 RUN yarn install
 
-# Start the application using PM2 as intended by Levanter
+# Render requires a non-daemon execution to track container status
 CMD ["pm2-runtime", "index.js", "--name", "levanter"]
