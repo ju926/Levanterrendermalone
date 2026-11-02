@@ -1,7 +1,6 @@
-# Use an official, lightweight, stable Node environment
 FROM node:20-bookworm-slim
 
-# Install system dependencies required for ffmpeg and process tracking
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     git \
     ffmpeg \
@@ -9,13 +8,13 @@ RUN apt-get update && apt-get install -y \
     procps \
     && rm -rf /var/lib/apt/lists/*
 
-# Global install of yarn and pm2
-RUN npm install -g yarn pm2
+# ⚡ FIX: Only install pm2 globally (since yarn already exists)
+RUN npm install -g pm2
 
 RUN git clone https://github.com/lyfe00011/levanter.git /root/LyFE/
 WORKDIR /root/LyFE/
 
 RUN yarn install --network-timeout 100000
 
-# Increase Node's memory space and optimize thread execution to stop WebSocket drops
+# Foreground execution with optimized memory allocation to prevent WebSocket drop loops
 CMD ["pm2-runtime", "start", "index.js", "--node-args=--max-old-space-size=1024", "--name", "levanter"]
